@@ -1,6 +1,6 @@
 {
   "name": "ai-cost-insight",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Universal AI cost and token usage tracker with reports, model/provider comparison, and CSV/JSON export.",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -39,7 +39,16 @@
     "monitoring",
     "openai",
     "anthropic",
-    "gemini"
+    "gemini",
+    "cost-tracking",
+    "token-counter",
+    "llm-cost",
+    "ai-analytics",
+    "gpt",
+    "usage-tracking",
+    "reporting",
+    "typescript",
+    "nodejs"
   ],
   "author": "Anil Kumar <anilachary67@gmail.com>",
   "license": "MIT",
