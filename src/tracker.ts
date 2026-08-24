@@ -57,8 +57,14 @@ export class AICostInsight {
   track(input: UsageEventInput): UsageEvent {
     if (!input.provider) throw new Error("provider is required");
     if (!input.model) throw new Error("model is required");
+    if (!Number.isFinite(input.promptTokens) || !Number.isFinite(input.completionTokens)) {
+      throw new Error("token counts must be finite numbers");
+    }
     if (input.promptTokens < 0 || input.completionTokens < 0) {
       throw new Error("token counts must be >= 0");
+    }
+    if (input.costUsd !== undefined && !Number.isFinite(input.costUsd)) {
+      throw new Error("costUsd must be a finite number");
     }
 
     const timestamp = (
@@ -67,7 +73,10 @@ export class AICostInsight {
         : input.timestamp
           ? new Date(input.timestamp)
           : new Date()
-    ).toISOString();
+    );
+    if (Number.isNaN(timestamp.getTime())) {
+      throw new Error("timestamp must be a valid date");
+    }
 
     const costUsd =
       input.costUsd ??
@@ -88,7 +97,7 @@ export class AICostInsight {
       totalTokens: input.promptTokens + input.completionTokens,
       latencyMs: input.latencyMs ?? 0,
       costUsd,
-      timestamp,
+      timestamp: timestamp.toISOString(),
       ...(input.requestId ? { requestId: input.requestId } : {}),
       meta: input.meta ?? {},
     };
@@ -198,7 +207,17 @@ export class AICostInsight {
       if (!e?.provider || !e?.model) {
         throw new Error("invalid usage event in import");
       }
-      this.events.push({ ...e, meta: e.meta ?? {} });
+      if (!Number.isFinite(e.promptTokens) || !Number.isFinite(e.completionTokens)) {
+        throw new Error("imported token counts must be finite numbers");
+      }
+      if (e.promptTokens < 0 || e.completionTokens < 0) {
+        throw new Error("imported token counts must be >= 0");
+      }
+      this.events.push({
+        ...e,
+        totalTokens: e.promptTokens + e.completionTokens,
+        meta: e.meta ?? {},
+      });
     }
   }
 }

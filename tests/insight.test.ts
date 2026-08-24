@@ -141,5 +141,22 @@ describe("ai-cost-insight", () => {
         completionTokens: 0,
       }),
     ).toThrow(/token counts/);
+    expect(() =>
+      insight.track({
+        provider: "openai",
+        model: "gpt-4o-mini",
+        promptTokens: Number.NaN,
+        completionTokens: 0,
+      }),
+    ).toThrow(/finite/);
+    expect(() =>
+      insight.track({
+        provider: "openai",
+        model: "gpt-4o-mini",
+        promptTokens: 1,
+        completionTokens: 1,
+        timestamp: "not-a-date",
+      }),
+    ).toThrow(/timestamp/);
   });
 });
